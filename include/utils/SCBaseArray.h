@@ -9,6 +9,8 @@
 #ifndef SnowCat_SCBaseArray_h
 #define SnowCat_SCBaseArray_h
 
+#include <stdlib.h>
+#include <stdarg.h>
 #include <limits.h>
 #include <vector>
 
@@ -16,10 +18,17 @@
 
 NAMESPACE_BEGIN(SC_NAMESPACE)
 
+// foreach
 #define SC_BASE_ARRAY_FOREACH(__array__, __item__, __item_type__) \
 	if ((__array__) && (__array__)->size() > 0) \
 		for (typename BaseArray<__item_type__>::const_iterator _iter = (__array__)->begin(); \
-			_iter != (__array__)->end() && ((__item__) = *_iter); _iter++)
+			_iter != (__array__)->end() && ((__item__) = *_iter, true); ++_iter)
+
+// foreach_reverse
+#define SC_BASE_ARRAY_FOREACH_REVERSE(__array__, __item__, __item_type__) \
+	if ((__array__) && (__array__)->size() > 0) \
+		for (typename BaseArray<__item_type__>::const_iterator _iter = (__array__)->end(); \
+			_iter != (__array__)->begin() && ((__item__) = *(--_iter), true); )
 
 template <typename E>
 class BaseArray : public std::vector<E>
@@ -31,7 +40,7 @@ public:
 	BaseArray(void) : std::vector<E>() {
 	}
 	
-	BaseArray(const BaseArray * other) : BaseArray() {
+	BaseArray(const BaseArray & other) : std::vector<E>() {
 		this->add(other);
 	}
 	
@@ -86,10 +95,9 @@ public:
 		this->push_back(item);
 	}
 	
-	inline void add(const BaseArray * array, const bool retain = true) {
-		if (array)
-			for (const_iterator iter = this->begin(); iter != this->end(); iter++)
-				this->add(*iter, retain);
+	inline void add(const BaseArray & array, const bool retain = true) {
+		for (const_iterator iter = array.begin(); iter != array.end(); iter++)
+			this->add(*iter, retain);
 	}
 	
 	inline void insert(E item, unsigned int index, const bool retain = true) {
@@ -125,10 +133,9 @@ public:
 		}
 	}
 	
-	inline void remove(const BaseArray * array, const bool release = true) {
-		if (array)
-			for (const_iterator iter = array->begin(); iter != array->end(); iter++)
-				this->remove(*iter, release);
+	inline void remove(const BaseArray & array, const bool release = true) {
+		for (const_iterator iter = array.begin(); iter != array.end(); iter++)
+			this->remove(*iter, release);
 	}
 	
 	inline void removeAll(const bool release = true) {

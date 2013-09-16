@@ -28,22 +28,6 @@ Object * Object::copy(void) const
 	return NULL;
 }
 
-void Object::retain(void)
-{
-	SCAssert(m_uiRefrence > 0, "reference count should greater than 0");
-	++m_uiRefrence;
-}
-
-void Object::release(void)
-{
-	SCAssert(m_uiRefrence > 0, "reference count should greater than 0");
-	--m_uiRefrence;
-	if (m_uiRefrence == 0)
-	{
-		delete this;
-	}
-}
-
 Object * Object::autorelease(void)
 {
 	PoolManager::sharedManager()->addObject(this);

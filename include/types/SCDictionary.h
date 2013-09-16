@@ -9,13 +9,19 @@
 #ifndef SnowCat_SCDictionary_h
 #define SnowCat_SCDictionary_h
 
+#include <string>
 #include "SCObjectDictionary.h"
 #include "SCObject.h"
 
 NAMESPACE_BEGIN(SC_NAMESPACE)
 
+// foreach
 #define SC_DICTIONARY_FOREACH(__dict__, __key__, __object__) \
 		SC_OBJECT_DICTIONARY_FOREACH(__dict__, __key__, __object__, std::string)
+
+// foreach_reverse
+#define SC_DICTIONARY_FOREACH_REVERSE(__dict__, __key__, __object__) \
+		SC_OBJECT_DICTIONARY_FOREACH_REVERSE(__dict__, __key__, __object__, std::string)
 
 class Array;
 

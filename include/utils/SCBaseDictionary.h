@@ -15,10 +15,17 @@
 
 NAMESPACE_BEGIN(SC_NAMESPACE)
 
+// foreach
 #define SC_BASE_DICTIONARY_FOREACH(__dict__, __key__, __object__, __key_type__, __object_class__) \
 	if ((__dict__) && (__dict__)->size() > 0) \
 		for (typename BaseDictionary<__key_type__, __object_class__>::const_iterator _iter = (__dict__)->begin(); \
-			_iter != (__dict__)->end() && ((__key__) = _iter->first, (__object__) = _iter->second); _iter++)
+			_iter != (__dict__)->end() && ((__key__) = _iter->first, (__object__) = _iter->second, true); ++_iter)
+
+// foreach_reverse
+#define SC_BASE_DICTIONARY_FOREACH_REVERSE(__dict__, __key__, __object__, __key_type__, __object_class__) \
+	if ((__dict__) && (__dict__)->size() > 0) \
+		for (typename BaseDictionary<__key_type__, __object_class__>::const_iterator _iter = (__dict__)->end(); \
+			_iter != (__dict__)->begin() && ((__key__) = (--_iter)->first, (__object__) = _iter->second, true); )
 
 template <typename K, class V>
 class BaseDictionary : public std::map<K, V>
@@ -30,7 +37,7 @@ public:
 	BaseDictionary(void) : std::map<K, V>() {
 	}
 	
-	BaseDictionary(const BaseDictionary * other) : BaseDictionary() {
+	BaseDictionary(const BaseDictionary & other) : std::map<K, V>() {
 		this->set(other);
 	}
 	
@@ -68,10 +75,9 @@ public:
 		this->insert(value_type(key, value));
 	}
 	
-	inline void set(const BaseDictionary * other, const bool retain = true) {
-		if (other)
-			for (const_iterator iter = other->begin(); iter != other->end(); iter++)
-				this->add(iter->first, iter->second, retain);
+	inline void set(const BaseDictionary & other, const bool retain = true) {
+		for (const_iterator iter = other.begin(); iter != other.end(); iter++)
+			this->set(iter->first, iter->second, retain);
 	}
 	
 #pragma mark Remove key-value

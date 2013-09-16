@@ -11,24 +11,31 @@
 
 #include "scMacros.h"
 #include "SCObject.h"
+#include "SCArray.h"
 
 NAMESPACE_BEGIN(SC_NAMESPACE)
 
-class Array;
-
 class AutoreleasePool : public Object
 {
-	Array * _pool;
-	
 public:
 	AutoreleasePool(void);
 	virtual ~AutoreleasePool(void);
 	virtual bool init(void);
 	
-	void addObject(Object * object);
-	void removeObject(Object * object);
+	inline void addObject(Object * object) {
+		_pool->addObject(object, false);
+	}
 	
-	void clear(void);
+	inline void removeObject(Object * object) {
+		_pool->removeObject(object, false);
+	}
+	
+	inline void clear(void) {
+		_pool->removeAllObjects();
+	}
+	
+private:
+	Array * _pool;
 };
 
 class PoolManager
@@ -39,8 +46,20 @@ public:
 	void push(void);
 	void pop(void);
 	
-	void addObject(Object * object);
-	void removeObject(Object * object);
+	inline void addObject(Object * object) {
+		getCurrentPool()->addObject(object);
+	}
+	
+	inline void removeObject(Object * object) {
+		getCurrentPool()->removeObject(object);
+	}
+	
+private:
+	Array * getCurrentStack(void);
+	
+	inline AutoreleasePool * getCurrentPool(void) {
+		return (AutoreleasePool *)getCurrentStack()->lastObject();
+	}
 };
 
 NAMESPACE_END

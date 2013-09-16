@@ -14,8 +14,13 @@
 
 NAMESPACE_BEGIN(SC_NAMESPACE)
 
+// foreach
 #define SC_ARRAY_FOREACH(__array__, __object__) \
 		SC_BASE_ARRAY_FOREACH(__array__, __object__, IObject *)
+
+// foreach_reverse
+#define SC_ARRAY_FOREACH_REVERSE(__array__, __object__) \
+		SC_BASE_ARRAY_FOREACH_REVERSE(__array__, __object__, IObject *)
 
 class Array : public Object, public BaseArray<IObject *>
 {
@@ -30,8 +35,8 @@ public:
 		return (Array *)(new Array())->autorelease();
 	}
 	
-	static Array * array(const Array * other) {
-		return (Array *)(new Array(*other))->autorelease();
+	static Array * array(const Array & other) {
+		return (Array *)(new Array(other))->autorelease();
 	}
 	
 	static Array * array(IObject * obj1, ...);
@@ -67,7 +72,7 @@ public:
 		this->add(object, retain);
 	}
 	
-	inline void addObjectsFromArray(const Array * array, const bool retain = true) {
+	inline void addObjectsFromArray(const Array & array, const bool retain = true) {
 		this->add(array, retain);
 	}
 	
@@ -93,7 +98,7 @@ public:
 		this->remove(index, release);
 	}
 	
-	inline void removeObjectsInArray(const Array * array, const bool release = true) {
+	inline void removeObjectsInArray(const Array & array, const bool release = true) {
 		this->remove(array, release);
 	}
 	

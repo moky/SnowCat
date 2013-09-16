@@ -25,14 +25,10 @@ class String;
 
 class Integer : Object
 {
-	typedef unsigned long UNIT_TYPE;
-	static const long long UNIT_MAX = 0x100000000;
-	
-	UNIT_TYPE *  m_pData;
-	unsigned int m_uLen;
-	bool         m_bNegative;
-	
 public:
+	typedef unsigned long UNIT_TYPE;
+	static const long long UNIT_MAX = 0x100000000; // 32 bits
+	
 	Integer(void);
 	Integer(const Integer & other);
 	virtual ~Integer(void);
@@ -45,6 +41,10 @@ public:
 	}
 	
 	virtual const char * description(void) const;
+	
+	virtual Integer * copy(void) const {
+		return new Integer(*this);
+	}
 	
 	virtual String * stringValue(const char * separator = ",") const;
 	
@@ -264,6 +264,11 @@ public:
 	inline bool operator != (const T & t) const {
 		return *this != Integer(t);
 	}
+	
+private:
+	UNIT_TYPE *  m_pData;
+	unsigned int m_uLen;
+	bool         m_bNegative;
 };
 
 NAMESPACE_END

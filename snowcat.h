@@ -32,7 +32,20 @@
 #include "SCObjectDictionary.h"
 // http
 #include "SCUrl.h"
-// data
+// message
+#include "SCNotification.h"
+#include "SCNotificationObserver.h"
+#include "SCNotificationCenter.h"
+// finite state machine
+#include "SCFsmProtocol.h"
+#include "SCFsmState.h"
+#include "SCFsmTransition.h"
+#include "SCFsmMachine.h"
+#include "SCFiniteStateMachine.h"
+#include "SCFiniteState.h"
+#include "SCStateTransition.h"
+#include "SCSequenceTransitions.h"
+#include "SCPropertyTransition.h"
 // platform
 #include "SCFile.h"
 #include "SCFileManager.h"

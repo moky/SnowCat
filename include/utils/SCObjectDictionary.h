@@ -15,15 +15,18 @@
 
 NAMESPACE_BEGIN(SC_NAMESPACE)
 
+// foreach
 #define SC_OBJECT_DICTIONARY_FOREACH(__dict__, __key__, __object__, __key_type__) \
 		SC_BASE_DICTIONARY_FOREACH(__dict__, __key__, __object__, __key_type__, IObject *)
+
+// foreach_reverse
+#define SC_OBJECT_DICTIONARY_FOREACH_REVERSE(__dict__, __key__, __object__, __key_type__) \
+		SC_BASE_DICTIONARY_FOREACH_REVERSE(__dict__, __key__, __object__, __key_type__, IObject *)
 
 template <typename K>
 class ObjectDictionary : public BaseDictionary<K, IObject *>
 {
 public:
-	typedef typename std::map<K, IObject *>::const_iterator const_iterator;
-	typedef typename std::map<K, IObject *>::value_type     value_type;
 	
 #pragma mark Query a Dictionary
 	
@@ -47,12 +50,9 @@ public:
 		this->remove(key, release);
 	}
 	
-	inline void removeObjectsForKeys(const BaseArray<K> * keys, const bool release = true) {
-		if (keys && keys->size() > 0) {
-			typedef typename BaseArray<K>::const_iterator keys_iterator;
-			for (keys_iterator iter = keys->begin(); iter != keys->end(); iter++)
-				this->removeObjectForKey(*iter, release);
-		}
+	inline void removeObjectsForKeys(const BaseArray<K> & keys, const bool release = true) {
+		for (typename BaseArray<K>::const_iterator iter = keys.begin(); iter != keys.end(); iter++)
+			this->removeObjectForKey(*iter, release);
 	}
 	
 	inline void removeAllObjects(const bool release = true) {

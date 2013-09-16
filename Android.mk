@@ -25,6 +25,14 @@ LOCAL_SRC_FILES := snowcat.cpp \
 					src/utils/SCStringUtils.cpp \
 					src/utils/SCUrlUtils.cpp \
 					\
+					src/msg/SCNotificationCenter.cpp \
+					\
+					src/fsm/SCFiniteStateMachine.cpp \
+					src/fsm/SCFiniteState.cpp \
+					src/fsm/SCStateTransition.cpp \
+					src/fsm/SCSequenceTransitions.cpp \
+					src/fsm/SCPropertyTransition.cpp \
+					\
 					src/third_party/MD5.cpp \
 					\
 					src/SCAutoreleasePool.cpp \
@@ -38,6 +46,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH) \
 					$(LOCAL_PATH)/include/platform \
 					$(LOCAL_PATH)/include/zip \
 					$(LOCAL_PATH)/include/rtti \
+					$(LOCAL_PATH)/include/msg \
 					$(LOCAL_PATH)/include/fsm \
 					$(LOCAL_PATH)/include/third_party \
 					$(LOCAL_PATH)/include 

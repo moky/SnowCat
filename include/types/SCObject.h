@@ -30,9 +30,6 @@ public:
 
 class Object : public IObject
 {
-	friend class AutoreleasePool;
-	unsigned int m_uiRefrence; // count of refrence
-	
 public:
 	// when the object is created, the refrence count of it is 1
 	Object(void) : m_uiRefrence(1) {}
@@ -43,11 +40,25 @@ public:
 	
 	virtual Object * copy(void) const;
 	
-	virtual void retain(void);
-	virtual void release(void);
-	virtual Object * autorelease(void);
+	inline void retain(void) {
+		SCAssert(m_uiRefrence > 0, "reference count should greater than 0");
+		++m_uiRefrence;
+	}
+	
+	inline void release(void) {
+		SCAssert(m_uiRefrence > 0, "reference count should greater than 0");
+		--m_uiRefrence;
+		if (m_uiRefrence == 0) delete this;
+	}
+	
+	Object * autorelease(void);
 	
 	inline unsigned int retainCount(void) const { return m_uiRefrence; }
+	
+private:
+	unsigned int m_uiRefrence; // count of refrence
+	
+	friend class AutoreleasePool;
 };
 
 template <class T>
