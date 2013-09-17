@@ -3,7 +3,7 @@
 //  SnowCat
 //
 //  Created by Moky on 13-9-16.
-//  Copyright (c) 2013年 Slanissue Inc. All rights reserved.
+//  Copyright (c) 2013 Slanissue Inc. All rights reserved.
 //
 
 #ifndef SnowCat_SCNotificationObserver_h

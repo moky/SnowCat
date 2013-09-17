@@ -11,6 +11,7 @@
 
 #include <string>
 #include "scMacros.h"
+#include "SCGeometry.h"
 
 NAMESPACE_BEGIN(SC_NAMESPACE)
 
@@ -85,7 +86,10 @@ public:
 	bool isConnected(void) const;
 	bool isWiFiActived(void) const;
 	
-	bool openURL(const char * pszURL) const;
+	// open system browser
+	bool openURL(const std::string & url) const;
+	// open inner-frame browser
+	bool openURL(const std::string & url, Rect & frame) const;
 };
 
 NAMESPACE_END

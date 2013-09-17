@@ -10,6 +10,7 @@
 
 #include "IPAddress.h"
 
+#include "SCLog.h"
 #include "SCClient.h"
 
 NAMESPACE_BEGIN(SC_NAMESPACE)
@@ -100,6 +101,25 @@ bool Client::init(void)
 	[pool release];
 	
 	return true;
+}
+
+bool Client_openBrowser(const std::string & url)
+{
+	bool flag = false;
+	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+	NSURL * pURL = [NSURL URLWithString:[NSString stringWithCString:url.c_str() encoding:NSUTF8StringEncoding]];
+	if ([[UIApplication sharedApplication] canOpenURL:pURL])
+	{
+		SCLog("opening url: [%s]", url.c_str());
+		[[UIApplication sharedApplication] openURL:pURL]; // open it!
+		flag = true;
+	}
+	else
+	{
+		SCLog("cannot open url: [%s]", url.c_str());
+	}
+	[pool release];
+	return flag;
 }
 
 NAMESPACE_END

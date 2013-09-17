@@ -15,20 +15,6 @@
 
 NAMESPACE_BEGIN(SC_NAMESPACE)
 
-FileManager::FileManager(void)
-: m_sResourceDirectory("")
-, m_sDocumentDirectory("")
-, m_sCachesDirectory("")
-, m_sTemporaryDirectory("")
-{
-	
-}
-
-FileManager::~FileManager(void)
-{
-	
-}
-
 bool SCFileManager_mkdir(const std::string & sPath)
 {
 	return mkdir(sPath.c_str(), 0755) == 0;
@@ -42,6 +28,7 @@ bool SCFileManager_mkdir(const std::string & sPath)
  *      4 - temporary directory
  */
 #if SC_PLATFORM_IS(SC_PLATFORM_ANDROID)
+// Android
 bool SCFileManager_makeDirectory(const int type, std::string & dir)
 {
 	dir.clear();
@@ -52,7 +39,7 @@ bool SCFileManager_makeDirectory(const int type, std::string & dir)
 	}
 	
 	std::string sPackageName = Client::currentClient()->getPackageName();
-	std::string path = "/sdcard/." + sPackageName;
+	std::string path = "/sdcard/.beva/" + sPackageName;
 	if (!SCFileManager_mkdir(path))
 	{
 		path = "/data/data/" + sPackageName;
@@ -76,35 +63,37 @@ bool SCFileManager_makeDirectory(const int type, std::string & dir)
 	return SCFileManager_mkdir(dir);
 }
 #else
+// iOS
 extern bool SCFileManager_makeDirectory(const int type, std::string & dir);
 #endif
 
-bool FileManager::init(void)
+FileManager::FileManager(void)
+: m_sResourceDirectory("")
+, m_sDocumentDirectory("")
+, m_sCachesDirectory("")
+, m_sTemporaryDirectory("")
 {
 	bool ok0 = SCFileManager_makeDirectory(0, m_sResourceDirectory);
 	bool ok1 = SCFileManager_makeDirectory(1, m_sDocumentDirectory);
 	bool ok2 = SCFileManager_makeDirectory(2, m_sCachesDirectory);
 	bool ok4 = SCFileManager_makeDirectory(4, m_sTemporaryDirectory);
-	if (ok0 && ok1 && ok2 && ok4)
-	{
-		return true;
-	}
-	else
+	
+	if (!ok0 || !ok1 || !ok2 || !ok4)
 	{
 		SCError("error");
-		return false;
+		SCAssert(false, "error");
 	}
 }
 
-static FileManager * s_pSharedFileManager = NULL;
+FileManager::~FileManager(void)
+{
+	
+}
+
+static FileManager * s_pSharedFileManager = new FileManager();
 
 FileManager * FileManager::sharedManager(void)
 {
-	if (!s_pSharedFileManager)
-	{
-		s_pSharedFileManager = new FileManager();
-		s_pSharedFileManager->init();
-	}
 	return s_pSharedFileManager;
 }
 

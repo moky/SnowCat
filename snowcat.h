@@ -19,6 +19,7 @@
 #include "SCDataReader.h"
 #include "SCDataWriter.h"
 // types
+#include "SCGeometry.h"
 #include "SCObject.h"
 #include "SCString.h"
 #include "SCArray.h"

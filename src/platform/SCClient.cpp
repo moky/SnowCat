@@ -11,14 +11,14 @@
 #include <net/if.h>
 
 #include "SCLog.h"
-#include "SCUrlUtils.h"
+#include "SCUrl.h"
 #include "SCClient.h"
 
 NAMESPACE_BEGIN(SC_NAMESPACE)
 
 Client::Client(void)
 {
-	
+	init();
 }
 
 Client::~Client(void)
@@ -123,18 +123,23 @@ extern "C"
 	}
 }
 
+bool Client_openBrowser(const std::string & url)
+{
+	SCWarning("not implement");
+	return true;
+}
+
+#else
+
+extern bool Client_openBrowser(const std::string & url);
+
 #endif // #if SC_PLATFORM_IS(SC_PLATFORM_ANDROID)
 
 
-static Client * s_pCurrentClient = NULL;
+static Client * s_pCurrentClient = new Client();
 
 Client * Client::currentClient(void)
 {
-	if (!s_pCurrentClient)
-	{
-		s_pCurrentClient = new Client();
-		s_pCurrentClient->init();
-	}
 	return s_pCurrentClient;
 }
 
@@ -217,8 +222,49 @@ bool Client::isWiFiActived(void) const
 	return flag;
 }
 
-bool Client::openURL(const char * pszURL) const
+bool Client::openURL(const std::string & url) const
 {
+	std::size_t pos = url.find(":");
+	if (pos == std::string::npos)
+	{
+		SCError("invalid scheme: %s", url.c_str());
+		return false;
+	}
+	
+	URL tmp(url);
+	if (tmp.isDynamic())
+	{
+		tmp.addClientParameters();
+	}
+	
+	// trying
+	if (Client_openBrowser(tmp))
+	{
+		return true;
+	}
+	
+	// cannot open, try the next fragment
+	pos = url.find("#");
+	if (pos == std::string::npos)
+	{
+		SCLog("cannot open url: %s", url.c_str());
+		return false;
+	}
+	
+	return openURL(url.substr(pos + 1));
+}
+
+bool Client::openURL(const std::string & url, Rect & frame) const
+{
+	if (frame.size.width <= 0)
+	{
+		frame.size.width = getScreenWidth();
+	}
+	if (frame.size.height <= 0)
+	{
+		frame.size.width = getScreenHeight();
+	}
+	
 	SCWarning("not implement");
 	return true;
 }

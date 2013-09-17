@@ -27,14 +27,10 @@ NotificationCenter::~NotificationCenter(void)
 	}
 }
 
-static NotificationCenter * s_pDefaultNotificationCenter = NULL;
+static NotificationCenter * s_pDefaultNotificationCenter = new NotificationCenter();
 
 NotificationCenter * NotificationCenter::defaultCenter(void)
 {
-	if (!s_pDefaultNotificationCenter)
-	{
-		s_pDefaultNotificationCenter = new NotificationCenter();
-	}
 	return s_pDefaultNotificationCenter;
 }
 
@@ -47,50 +43,43 @@ void NotificationCenter::addObserver(IObject * target, NotificationHandler selec
 		pList = new Array();
 		m_pObserverLists->setObject(pList, name, false); // REF = 1
 	}
-	else
-	{
-		IObject * obj;
-		NotificationObserver * nob;
-		SC_ARRAY_FOREACH_REVERSE(pList, obj)
-		{
-			nob = (NotificationObserver *)obj;
-			if (target == nob->getTarget())
-			{
-				SCWarning("observer is exists for name: %s", name.c_str());
-				return;
-			}
-		}
-	}
 	
 	NotificationObserver * pObserver = new NotificationObserver(target, selector);
 	pList->addObject(pObserver, false); // REF = 1
 }
 
-void NotificationCenter::removeObserver(IObject * target, const std::string & name)
+void NotificationCenter::postNotification(const Notification & notice) const
+{
+	IObject * obj;
+	NotificationObserver * nob;
+	Array * pList;
+	
+	// "name"
+	pList = (Array *)m_pObserverLists->objectForKey(notice.getName());
+	SC_ARRAY_FOREACH_REVERSE(pList, obj)
+	{
+		nob = (NotificationObserver *)obj;
+		nob->perform(notice);
+	}
+	
+	// "*"
+	pList = (Array *)m_pObserverLists->objectForKey("*");
+	SC_ARRAY_FOREACH_REVERSE(pList, obj)
+	{
+		nob = (NotificationObserver *)obj;
+		nob->perform(notice);
+	}
+}
+
+void NotificationCenter::purgeCenter(void)
 {
 	BaseArray<std::string> emptyLists = BaseArray<std::string>();
 	
 	std::string key;
 	IObject * obj;
-	NotificationObserver * nob;
 	SC_DICTIONARY_FOREACH_REVERSE(m_pObserverLists, key, obj)
 	{
-		if (name != "*" && name != key)
-		{
-			continue;
-		}
-		Array * pList = (Array *)obj;
-		
-		SC_ARRAY_FOREACH_REVERSE(pList, obj)
-		{
-			nob = (NotificationObserver *)obj;
-			if (target == nob->getTarget())
-			{
-				pList->removeObject(obj);
-			}
-		}
-		
-		if (pList->empty())
+		if (((Array *)obj)->empty())
 		{
 			emptyLists.add(key);
 		}
@@ -102,35 +91,43 @@ void NotificationCenter::removeObserver(IObject * target, const std::string & na
 	}
 }
 
-void NotificationCenter::postNotification(const Notification & notice) const
+NotificationObserver * NotificationCenter::locateObserver(const IObject * target, const std::string & name, const int method)
 {
-	std::string name = notice.getName();
-	
-	if (name == "*")
+	std::string key;
+	IObject * obj;
+	Array * pList;
+	NotificationObserver * nob;
+	SC_DICTIONARY_FOREACH_REVERSE(m_pObserverLists, key, obj)
 	{
-		std::string key;
-		IObject * obj;
-		NotificationObserver * nob;
-		SC_DICTIONARY_FOREACH_REVERSE(m_pObserverLists, key, obj)
+		if (name != "*" && name != key)
 		{
-			Array * pList = (Array *)obj;
-			SC_ARRAY_FOREACH_REVERSE(pList, obj)
-			{
-				nob = (NotificationObserver *)obj;
-				nob->perform(notice);
-			}
+			continue;
 		}
-	}
-	else if (Array * pList = (Array *)m_pObserverLists->objectForKey(name))
-	{
-		IObject * obj;
-		NotificationObserver * nob;
+		pList = (Array *)obj;
 		SC_ARRAY_FOREACH_REVERSE(pList, obj)
 		{
 			nob = (NotificationObserver *)obj;
-			nob->perform(notice);
+			if (nob->getTarget() == target)
+			{
+				if (method == 0)
+				{
+					return nob;
+				}
+				else if (method == 1)
+				{
+					nob->retain();
+					nob->autorelease();
+					pList->removeObject(nob);
+					return nob;
+				}
+				else if (method == -1)
+				{
+					pList->removeObject(nob);
+				}
+			}
 		}
 	}
+	return NULL;
 }
 
 NAMESPACE_END

@@ -8,6 +8,7 @@ LOCAL_MODULE_FILENAME := libsnowcat
 
 LOCAL_SRC_FILES := snowcat.cpp \
 					\
+					src/types/SCGeometry.cpp \
 					src/types/SCObject.cpp \
 					src/types/SCArray.cpp \
 					src/types/SCDictionary.cpp \

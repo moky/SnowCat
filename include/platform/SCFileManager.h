@@ -15,17 +15,9 @@ NAMESPACE_BEGIN(SC_NAMESPACE)
 
 class FileManager
 {
-	// main bundle
-	URL m_sResourceDirectory;
-	// directories in '/sdcard/'
-	URL m_sDocumentDirectory;
-	URL m_sCachesDirectory;
-	URL m_sTemporaryDirectory;
-	
 public:
 	FileManager(void);
 	virtual ~FileManager(void);
-	virtual bool init(void);
 	
 	static FileManager * sharedManager(void);
 	
@@ -45,6 +37,14 @@ public:
 	const char * documentDirectory(void) const { return m_sDocumentDirectory.c_str(); }
 	const char * cachesDirectory(void) const { return m_sCachesDirectory.c_str(); }
 	const char * temporaryDirectory(void) const { return m_sTemporaryDirectory.c_str(); }
+	
+private:
+	// main bundle
+	URL m_sResourceDirectory;
+	// directories in '/sdcard/'
+	URL m_sDocumentDirectory;
+	URL m_sCachesDirectory;
+	URL m_sTemporaryDirectory;
 };
 
 NAMESPACE_END
