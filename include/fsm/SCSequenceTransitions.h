@@ -24,6 +24,8 @@ NAMESPACE_BEGIN(SC_NAMESPACE)
 
 class SequenceTransitions : StateTransition
 {
+	typedef StateTransition super;
+	
 public:
 	SequenceTransitions(FiniteState * target);
 	SequenceTransitions(const std::string & target);

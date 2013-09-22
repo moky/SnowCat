@@ -33,7 +33,7 @@ void FiniteState::addTransition(StateTransition * transition)
 	{
 		transition->retain();
 	}
-	State<StateTransition>::addTransition(transition);
+	super::addTransition(transition);
 }
 
 void FiniteState::clearTransitions(void)
@@ -43,7 +43,7 @@ void FiniteState::clearTransitions(void)
 	{
 		if (pTrans) pTrans->release();
 	}
-	State<StateTransition>::clearTransitions();
+	super::clearTransitions();
 }
 
 void FiniteState::enter(IMachine * fsm)

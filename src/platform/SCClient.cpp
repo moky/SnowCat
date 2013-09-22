@@ -123,15 +123,16 @@ extern "C"
 	}
 }
 
-bool Client_openBrowser(const std::string & url)
+bool Client_openURL(const std::string & url)
 {
+	// TODO: implement for Android
 	SCWarning("not implement");
 	return true;
 }
 
 #else
 
-extern bool Client_openBrowser(const std::string & url);
+extern bool Client_openURL(const std::string & url);
 
 #endif // #if SC_PLATFORM_IS(SC_PLATFORM_ANDROID)
 
@@ -173,7 +174,7 @@ void Client::updateClientParameters(void)
 
 #pragma mark Network
 
-int SCClient_checkSocket(int socket, const char * name)
+static int checkSocket(int socket, const char * name)
 {
 	struct ifreq ifr;
 	memset(&ifr, 0, sizeof(ifreq));
@@ -209,7 +210,7 @@ bool Client::isWiFiActived(void) const
 	int res;
 	for (int i = 0; i < 6; i++)
 	{
-		res = SCClient_checkSocket(fd, ss[i].c_str());
+		res = checkSocket(fd, ss[i].c_str());
 		if (res != -1)
 		{
 			SCLog("found at %s", ss[i].c_str());
@@ -224,6 +225,37 @@ bool Client::isWiFiActived(void) const
 
 bool Client::openURL(const std::string & url) const
 {
+	if (url.empty())
+	{
+		SCError("error");
+		return false;
+	}
+	
+	URL tmp(url);
+	if (tmp.isDynamic())
+	{
+		tmp.addClientParameters();
+	}
+	
+	// trying
+	if (Client_openURL(tmp))
+	{
+		return true;
+	}
+	
+	// cannot open, try the next fragment
+	std::size_t pos = url.find("#");
+	if (pos == std::string::npos)
+	{
+		SCLog("cannot open url: %s", url.c_str());
+		return false;
+	}
+	
+	return openURL(url.substr(pos + 1));
+}
+
+bool Client::openURL(const std::string & url, Rect & frame) const
+{
 	std::size_t pos = url.find(":");
 	if (pos == std::string::npos)
 	{
@@ -237,25 +269,6 @@ bool Client::openURL(const std::string & url) const
 		tmp.addClientParameters();
 	}
 	
-	// trying
-	if (Client_openBrowser(tmp))
-	{
-		return true;
-	}
-	
-	// cannot open, try the next fragment
-	pos = url.find("#");
-	if (pos == std::string::npos)
-	{
-		SCLog("cannot open url: %s", url.c_str());
-		return false;
-	}
-	
-	return openURL(url.substr(pos + 1));
-}
-
-bool Client::openURL(const std::string & url, Rect & frame) const
-{
 	if (frame.size.width <= 0)
 	{
 		frame.size.width = getScreenWidth();
@@ -265,6 +278,7 @@ bool Client::openURL(const std::string & url, Rect & frame) const
 		frame.size.width = getScreenHeight();
 	}
 	
+	// TODO: implement here for both iOS and Android
 	SCWarning("not implement");
 	return true;
 }

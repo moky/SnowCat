@@ -40,7 +40,7 @@
 	#define SC_PLATFORM               SC_PLATFORM_IOS
 #endif
 
-#define SC_PLATFORM_IS(_X_)           (SC_PLATFORM & _X_)
+#define SC_PLATFORM_IS(_X_)           (SC_PLATFORM & (_X_))
 
 
 

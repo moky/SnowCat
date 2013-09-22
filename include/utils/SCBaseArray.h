@@ -33,14 +33,16 @@ NAMESPACE_BEGIN(SC_NAMESPACE)
 template <typename E>
 class BaseArray : public std::vector<E>
 {
-public:
-	typedef typename std::vector<E>::const_iterator const_iterator;
-	typedef typename std::vector<E>::value_type     value_type;
+	typedef std::vector<E> super;
 	
-	BaseArray(void) : std::vector<E>() {
+public:
+	typedef typename super::const_iterator const_iterator;
+	typedef typename super::value_type     value_type;
+	
+	BaseArray(void) : super() {
 	}
 	
-	BaseArray(const BaseArray & other) : std::vector<E>() {
+	BaseArray(const BaseArray & other) : super() {
 		this->add(other);
 	}
 	
@@ -103,7 +105,7 @@ public:
 	inline void insert(E item, unsigned int index, const bool retain = true) {
 		if (index > this->size()) index = this->size();
 		if (retain) this->retainItem(item);
-		this->std::vector<E>::insert(this->begin() + index, item);
+		super::insert(this->begin() + index, item);
 	}
 	
 	inline void replace(E item, const unsigned int index, const bool release = true) {

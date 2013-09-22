@@ -17,6 +17,8 @@ class Object;
 
 class DataWriter : public Data
 {
+	typedef Data super;
+	
 public:
 	DataWriter(void);
 	DataWriter(Object * data);

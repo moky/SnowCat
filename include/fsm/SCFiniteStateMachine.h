@@ -18,6 +18,8 @@ NAMESPACE_BEGIN(SC_NAMESPACE)
 
 class FiniteStateMachine : public FSM_NAMESPACE::Machine, public Object
 {
+	typedef Machine super;
+	
 public:
 	FiniteStateMachine(void);
 	virtual ~FiniteStateMachine(void);

@@ -103,7 +103,7 @@ bool Client::init(void)
 	return true;
 }
 
-bool Client_openBrowser(const std::string & url)
+bool Client_openURL(const std::string & url)
 {
 	bool flag = false;
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];

@@ -41,7 +41,7 @@ Data::~Data(void)
 
 bool Data::init(void)
 {
-	File::init();
+	super::init();
 	m_bIsDataValid = false;
 	return true;
 }

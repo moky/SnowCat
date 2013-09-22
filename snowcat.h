@@ -31,6 +31,7 @@
 #include "SCBaseArray.h"
 #include "SCBaseDictionary.h"
 #include "SCObjectDictionary.h"
+#include "SCObjectArray.h"
 // http
 #include "SCUrl.h"
 // message

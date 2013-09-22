@@ -16,8 +16,7 @@ NAMESPACE_BEGIN(SC_NAMESPACE)
 
 class Data : public File
 {
-protected:
-	bool m_bIsDataValid;
+	typedef File super;
 	
 public:
 	Data(void);
@@ -35,6 +34,9 @@ protected:
 	DataItem * getItem(const unsigned int iLocation) const;
 	unsigned char * getItemsBuffer(unsigned long * pBufferLength) const;
 	unsigned char * getStringsBuffer(unsigned long * pBufferLength) const;
+	
+protected:
+	bool m_bIsDataValid;
 };
 
 NAMESPACE_END

@@ -30,14 +30,16 @@ NAMESPACE_BEGIN(SC_NAMESPACE)
 template <typename K, class V>
 class BaseDictionary : public std::map<K, V>
 {
-public:
-	typedef typename std::map<K, V>::const_iterator const_iterator;
-	typedef typename std::map<K, V>::value_type     value_type;
+	typedef std::map<K, V> super;
 	
-	BaseDictionary(void) : std::map<K, V>() {
+public:
+	typedef typename super::const_iterator const_iterator;
+	typedef typename super::value_type     value_type;
+	
+	BaseDictionary(void) : super() {
 	}
 	
-	BaseDictionary(const BaseDictionary & other) : std::map<K, V>() {
+	BaseDictionary(const BaseDictionary & other) : super() {
 		this->set(other);
 	}
 	

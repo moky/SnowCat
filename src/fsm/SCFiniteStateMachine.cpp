@@ -49,7 +49,7 @@ IState * FiniteStateMachine::getDefaultState(void)
 	{
 		m_pDefaultState = getState(m_sDefaultStateName);
 	}
-	return Machine::getDefaultState();
+	return super::getDefaultState();
 }
 
 NAMESPACE_END

@@ -48,7 +48,10 @@ Array * Array::copy(void) const
 		}
 		obj = (*iter)->copy();
 		SCAssert(obj, "Not enough memory");
-		array->addObject(obj, false); // REF = 1
+		if (obj)
+		{
+			array->addObject(obj, false); // REF = 1
+		}
 	}
 	return array;
 }

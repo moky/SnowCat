@@ -45,7 +45,6 @@ NAMESPACE_BEGIN(SC_NAMESPACE)
 	#define SCWarning(...)     do {} while(0)
 #endif
 
-void log(const char * format, ...);
 void log(const char * file, const int line, const char * function, const char * format, ...);
 
 NAMESPACE_END

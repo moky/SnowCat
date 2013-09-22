@@ -20,10 +20,7 @@ class Dictionary;
 
 class DataReader : public Data
 {
-	Array * m_pStrings;   // strings array
-	Object * m_pRootObject; // root object
-	
-	unsigned int m_iItemIndex;
+	typedef Data super;
 	
 public:
 	DataReader(void);
@@ -37,15 +34,21 @@ protected:
 	void reset(void);
 	DataItem * read(void);
 	
-	inline String * getString(const unsigned int iLocation) const;
+	String * getString(const unsigned int iLocation) const;
 	
 private:
 	Object * parseRoot(void);
 	
-	inline Object * parseItem(const DataItem * pItem);
+	Object * parseItem(const DataItem * pItem);
 	
 	Array * parseArrayItem(const DataItem * pItem);
 	Dictionary * parseDictionaryItem(const DataItem * pItem);
+	
+private:
+	Array * m_pStrings;   // strings array
+	Object * m_pRootObject; // root object
+	
+	unsigned int m_iItemIndex;
 };
 
 NAMESPACE_END

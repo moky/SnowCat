@@ -58,7 +58,7 @@ IState * SequenceTransitions::evaluate(IState * current, IMachine * fsm)
 			return NULL;
 		}
 	}
-	return StateTransition::evaluate(current, fsm);
+	return super::evaluate(current, fsm);
 }
 
 NAMESPACE_END

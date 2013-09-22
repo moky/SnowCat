@@ -56,7 +56,9 @@ bool PropertyTransition::init(const std::string &key, const std::string &value, 
 	return true;
 }
 
-bool PropertyTransition_compareIntegers(PropertyTransition::Condition cond, const int value, const int defaultValue)
+#pragma mark -
+
+static bool compareIntegers(PropertyTransition::Condition cond, const int value, const int defaultValue)
 {
 	switch (cond)
 	{
@@ -91,7 +93,7 @@ bool PropertyTransition_compareIntegers(PropertyTransition::Condition cond, cons
 	return false;
 }
 
-bool PropertyTransition_compareFloats(PropertyTransition::Condition cond, const float value, const float defaultValue)
+static bool compareFloats(PropertyTransition::Condition cond, const float value, const float defaultValue)
 {
 	switch (cond)
 	{
@@ -126,7 +128,7 @@ bool PropertyTransition_compareFloats(PropertyTransition::Condition cond, const 
 	return false;
 }
 
-bool PropertyTransition_compareStrings(PropertyTransition::Condition cond, const char * value, const char * defaultValue)
+static bool compareStrings(PropertyTransition::Condition cond, const char * value, const char * defaultValue)
 {
 	switch (cond)
 	{
@@ -175,23 +177,23 @@ IState * PropertyTransition::evaluate(IState * current, IMachine * fsm)
 	{
 		if (m_iValueType == INTEGER)
 		{
-			if (PropertyTransition_compareIntegers(m_iCondition, pString->intValue(), atoi(m_sPropertyValue.c_str())))
+			if (compareIntegers(m_iCondition, pString->intValue(), atoi(m_sPropertyValue.c_str())))
 			{
-				return StateTransition::evaluate(current, fsm);
+				return super::evaluate(current, fsm);
 			}
 		}
 		else if (m_iValueType == FLOAT)
 		{
-			if (PropertyTransition_compareFloats(m_iCondition, pString->floatValue(), atof(m_sPropertyValue.c_str())))
+			if (compareFloats(m_iCondition, pString->floatValue(), atof(m_sPropertyValue.c_str())))
 			{
-				return StateTransition::evaluate(current, fsm);
+				return super::evaluate(current, fsm);
 			}
 		}
 		else if (m_iValueType == STRING)
 		{
-			if (PropertyTransition_compareStrings(m_iCondition, pString->c_str(), m_sPropertyValue.c_str()))
+			if (compareStrings(m_iCondition, pString->c_str(), m_sPropertyValue.c_str()))
 			{
-				return StateTransition::evaluate(current, fsm);
+				return super::evaluate(current, fsm);
 			}
 		}
 	}

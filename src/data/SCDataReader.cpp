@@ -17,7 +17,7 @@
 
 NAMESPACE_BEGIN(SC_NAMESPACE)
 
-Array * DataReader_getStringArrayFromBuffer(const unsigned char * pBuffer, const unsigned long iBufferLength)
+static Array * getStringArrayFromBuffer(const unsigned char * pBuffer, const unsigned long iBufferLength)
 {
 	if (!pBuffer || iBufferLength == 0)
 	{
@@ -87,7 +87,7 @@ DataReader::~DataReader(void)
 
 bool DataReader::init(void)
 {
-	if (!Data::init())
+	if (!super::init())
 	{
 		return false;
 	}
@@ -114,7 +114,7 @@ Object * DataReader::getRootObject(void)
 	
 	// init string array
 	unsigned long iStringsBufferLength = 0;
-	unsigned char * pStringsBuffer = getStringsBuffer(&iStringsBufferLength); // Data::getStringsBuffer(length)
+	unsigned char * pStringsBuffer = getStringsBuffer(&iStringsBufferLength);
 	if (!pStringsBuffer || iStringsBufferLength == 0)
 	{
 		SCError("failed to get frames buffer");
@@ -123,7 +123,7 @@ Object * DataReader::getRootObject(void)
 	
 	PoolManager::sharedManager()->push();
 	
-	m_pStrings = DataReader_getStringArrayFromBuffer(pStringsBuffer, iStringsBufferLength); // REF = 1, autoreleased
+	m_pStrings = getStringArrayFromBuffer(pStringsBuffer, iStringsBufferLength); // REF = 1, autoreleased
 	
 	if (!m_pStrings || m_pStrings->count() == 0)
 	{

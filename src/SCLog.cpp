@@ -17,21 +17,21 @@
 
 NAMESPACE_BEGIN(SC_NAMESPACE)
 
-inline void _printf(const char *format, va_list args)
+static inline void printf_(const char *format, va_list args)
 {
-    char buf[1024 * 16];
+	char buf[1024 * 16];
 	bzero(buf, 1024 * 16);
 	
-    vsprintf(buf, format, args);
+	vsprintf(buf, format, args);
 	
 #ifdef __android_log_print
-    __android_log_print(ANDROID_LOG_DEBUG, "snowcat debug info",  buf);
+	__android_log_print(ANDROID_LOG_DEBUG, "snowcat debug info",  buf);
 #else
 	printf("SnowCat: %s\n", buf);
 #endif
 }
 
-inline void log(const char *format, va_list args)
+static inline void log_(const char *format, va_list args)
 {
 	time_t t = time(NULL);
 	tm * tm = gmtime(&t);
@@ -41,15 +41,7 @@ inline void log(const char *format, va_list args)
 	snprintf(buf, 16, "[%02d:%02d:%02d] ", tm->tm_hour, tm->tm_min, tm->tm_sec);
 	
 	std::string string = std::string(buf).append(format);
-	_printf(string.c_str(), args);
-}
-
-void log(const char *format, ...)
-{
-    va_list args;
-    va_start(args, format);
-	log(format, args);
-    va_end(args);
+	printf_(string.c_str(), args);
 }
 
 void log(const char * file, const int line, const char * function, const char * format, ...)
@@ -65,7 +57,7 @@ void log(const char * file, const int line, const char * function, const char * 
 	
     va_list args;
     va_start(args, format);
-	log(string.c_str(), args);
+	log_(string.c_str(), args);
     va_end(args);
 }
 

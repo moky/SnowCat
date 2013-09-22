@@ -43,7 +43,7 @@ bool AutoreleasePool::init(void)
 #pragma mark -
 
 static PoolManager * s_pSharedPoolManager = NULL;
-ObjectDictionary<pthread_t> * s_pSharedPoolStacks = NULL;
+static ObjectDictionary<pthread_t> * s_pSharedPoolStacks = NULL;
 
 static pthread_mutex_t s_async_mutex_autorelase_pool;
 
@@ -51,9 +51,6 @@ PoolManager * PoolManager::sharedManager(void)
 {
 	if (!s_pSharedPoolManager)
 	{
-		pthread_mutex_init(&s_async_mutex_autorelase_pool, NULL);
-		pthread_mutex_lock(&s_async_mutex_autorelase_pool);
-		
 		// create pool manager
 		s_pSharedPoolManager = new PoolManager();
 		SCAssert(s_pSharedPoolManager, "Not enough memory");
@@ -65,7 +62,7 @@ PoolManager * PoolManager::sharedManager(void)
 			SCAssert(s_pSharedPoolStacks, "Not enough memory");
 		}
 		
-		pthread_mutex_unlock(&s_async_mutex_autorelase_pool);
+		pthread_mutex_init(&s_async_mutex_autorelase_pool, NULL);
 	}
 	return s_pSharedPoolManager;
 }

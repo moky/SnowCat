@@ -15,6 +15,8 @@ NAMESPACE_BEGIN(SC_NAMESPACE)
 
 class PropertyTransition : StateTransition
 {
+	typedef StateTransition super;
+	
 public:
 	// compare condition
 	typedef enum {

@@ -26,6 +26,9 @@ NAMESPACE_BEGIN(SC_NAMESPACE)
 template <typename K>
 class ObjectDictionary : public BaseDictionary<K, IObject *>
 {
+	typedef IObject * object_type;
+	typedef BaseDictionary<K, object_type> super;
+	
 public:
 	
 #pragma mark Query a Dictionary
@@ -34,13 +37,13 @@ public:
 		return this->size();
 	}
 	
-	inline IObject * objectForKey(const K & key) const {
+	inline object_type objectForKey(const K & key) const {
 		return this->value(key);
 	}
 	
 #pragma mark Adding objects
 	
-	inline void setObject(IObject * object, const K & key, const bool retain = true) {
+	inline void setObject(object_type object, const K & key, const bool retain = true) {
 		this->set(key, object, retain);
 	}
 	
@@ -60,11 +63,11 @@ public:
 	}
 	
 protected:
-	inline void retainValue(IObject * value) const {
+	inline void retainValue(object_type value) const {
 		if (value) value->retain();
 	}
 	
-	inline void releaseValue(IObject * value) const {
+	inline void releaseValue(object_type value) const {
 		if (value) value->release();
 	}
 };

@@ -17,22 +17,7 @@
 
 NAMESPACE_BEGIN(SC_NAMESPACE)
 
-DataWriter::DataWriter(void)
-: Data()
-{
-	
-}
-
-DataWriter::DataWriter(Object * data)
-: Data()
-{
-	bool ok = init(data);
-	SCAssert(ok, "init data error");
-	(void)ok;
-}
-
-unsigned char * SCDataWriter_createBufferWithStringArray(Array * pArray,
-															  unsigned long * pBufferLength)
+static unsigned char * createBufferWithStringArray(Array * pArray, unsigned long * pBufferLength)
 {
 	if (!pArray || pArray->count() == 0 || !pBufferLength)
 	{
@@ -69,7 +54,7 @@ unsigned char * SCDataWriter_createBufferWithStringArray(Array * pArray,
 	return pBuffer;
 }
 
-int SCDataWriter_indexForString(String * pString, Array * pArray)
+static int indexForString(String * pString, Array * pArray)
 {
 	if (!pString)
 	{
@@ -94,11 +79,9 @@ int SCDataWriter_indexForString(String * pString, Array * pArray)
 	return index;
 }
 
-int SCDataWriter_processData(DataItem * pItemBuffer, unsigned int iPlaceLeft,
-								  IObject * pObject, Array * pStringsArray); // pre-defined
+static int processData(DataItem * pItemBuffer, unsigned int iPlaceLeft, IObject * pObject, Array * pStringsArray); // pre-defined
 
-int SCDataWriter_processString(DataItem * pItemBuffer, unsigned int iPlaceLeft,
-									String * pString, Array * pStringsArray)
+static int processString(DataItem * pItemBuffer, unsigned int iPlaceLeft, String * pString, Array * pStringsArray)
 {
 	if (pString->isNumeric())
 	{
@@ -115,7 +98,7 @@ int SCDataWriter_processString(DataItem * pItemBuffer, unsigned int iPlaceLeft,
 		return 1;
 	}
 	
-	int index = SCDataWriter_indexForString(pString, pStringsArray);
+	int index = indexForString(pString, pStringsArray);
 	SCAssert(index >= 0, "");
 	if (index < 0)
 	{
@@ -127,8 +110,7 @@ int SCDataWriter_processString(DataItem * pItemBuffer, unsigned int iPlaceLeft,
 	return 1;
 }
 
-int SCDataWriter_processArray(DataItem * pItemBuffer, unsigned int iPlaceLeft,
-								   const Array * pArray, Array * pStringsArray)
+static int processArray(DataItem * pItemBuffer, unsigned int iPlaceLeft, const Array * pArray, Array * pStringsArray)
 {
 	int iCount = 0;
 	pItemBuffer->type = DataItemTypeArray;
@@ -139,7 +121,7 @@ int SCDataWriter_processArray(DataItem * pItemBuffer, unsigned int iPlaceLeft,
 	IObject * pObject = NULL;
 	SC_ARRAY_FOREACH(pArray, pObject)
 	{
-		int cnt = SCDataWriter_processData(pChild, iPlaceLeft - iCount, pObject, pStringsArray);
+		int cnt = processData(pChild, iPlaceLeft - iCount, pObject, pStringsArray);
 		if (cnt <= 0)
 		{
 			SCError("error");
@@ -151,8 +133,7 @@ int SCDataWriter_processArray(DataItem * pItemBuffer, unsigned int iPlaceLeft,
 	return iCount;
 }
 
-int SCDataWriter_processDictionary(DataItem * pItemBuffer, unsigned int iPlaceLeft,
-										const Dictionary * pDict, Array * pStringsArray)
+static int processDictionary(DataItem * pItemBuffer, unsigned int iPlaceLeft, const Dictionary * pDict, Array * pStringsArray)
 {
 	int iCount = 0;
 	pItemBuffer->type = DataItemTypeDictionary;
@@ -165,7 +146,7 @@ int SCDataWriter_processDictionary(DataItem * pItemBuffer, unsigned int iPlaceLe
 	SC_DICTIONARY_FOREACH(pDict, key, obj)
 	{
 		String * pKey = new String(key);
-		int index = SCDataWriter_indexForString(pKey, pStringsArray);
+		int index = indexForString(pKey, pStringsArray);
 		pKey->release();
 		
 		SCAssert(index >= 0, "");
@@ -176,7 +157,7 @@ int SCDataWriter_processDictionary(DataItem * pItemBuffer, unsigned int iPlaceLe
 		}
 		pChild->key = index;
 		
-		int cnt = SCDataWriter_processData(pChild, iPlaceLeft - iCount, obj, pStringsArray);
+		int cnt = processData(pChild, iPlaceLeft - iCount, obj, pStringsArray);
 		if (cnt <= 0)
 		{
 			SCError("error");
@@ -188,8 +169,7 @@ int SCDataWriter_processDictionary(DataItem * pItemBuffer, unsigned int iPlaceLe
 	return iCount;
 }
 
-int SCDataWriter_processData(DataItem * pItemBuffer, unsigned int iPlaceLeft,
-								  IObject * pObject, Array * pStringsArray)
+static int processData(DataItem * pItemBuffer, unsigned int iPlaceLeft, IObject * pObject, Array * pStringsArray)
 {
 	SCAssert(iPlaceLeft > 0, "");
 	if (iPlaceLeft == 0)
@@ -204,21 +184,21 @@ int SCDataWriter_processData(DataItem * pItemBuffer, unsigned int iPlaceLeft,
 	}
 	else if (Dictionary * pDict = dynamic_cast<Dictionary *>(pObject))
 	{
-		iCount += SCDataWriter_processDictionary(pItemBuffer, iPlaceLeft, pDict, pStringsArray);
+		iCount += processDictionary(pItemBuffer, iPlaceLeft, pDict, pStringsArray);
 	}
 	else if (Array * pArray = dynamic_cast<Array *>(pObject))
 	{
-		iCount += SCDataWriter_processArray(pItemBuffer, iPlaceLeft, pArray, pStringsArray);
+		iCount += processArray(pItemBuffer, iPlaceLeft, pArray, pStringsArray);
 	}
 	else if (String * pString = dynamic_cast<String *>(pObject))
 	{
-		iCount += SCDataWriter_processString(pItemBuffer, iPlaceLeft, pString, pStringsArray);
+		iCount += processString(pItemBuffer, iPlaceLeft, pString, pStringsArray);
 	}
 	else if (Integer * pInteger = dynamic_cast<Integer *>(pObject))
 	{
 		pItemBuffer->type = DataItemTypeBigInteger;
 		String * pString = pInteger->stringValue(NULL); // save big integer as string
-		iCount += SCDataWriter_processString(pItemBuffer, iPlaceLeft, pString, pStringsArray);
+		iCount += processString(pItemBuffer, iPlaceLeft, pString, pStringsArray);
 	}
 	else
 	{
@@ -229,7 +209,7 @@ int SCDataWriter_processData(DataItem * pItemBuffer, unsigned int iPlaceLeft,
 	return iCount;
 }
 
-unsigned char * SCDataWriter_createItemsBuffer(Object * pData, unsigned long * pBufferLength, Array * pStringsArray)
+static unsigned char * createItemsBuffer(Object * pData, unsigned long * pBufferLength, Array * pStringsArray)
 {
 	if (!pData || !pBufferLength || !pStringsArray)
 	{
@@ -244,7 +224,7 @@ unsigned char * SCDataWriter_createItemsBuffer(Object * pData, unsigned long * p
 	SCAssert(pItemsBuffer, "Not enough memory");
 	memset(pItemsBuffer, 0, iBufferLength);
 	
-	int iCount = SCDataWriter_processData(pItemsBuffer, iMaxItems, pData, pStringsArray);
+	int iCount = processData(pItemsBuffer, iMaxItems, pData, pStringsArray);
 	if (iCount <= 0)
 	{
 		SCError("error");
@@ -253,6 +233,20 @@ unsigned char * SCDataWriter_createItemsBuffer(Object * pData, unsigned long * p
 	}
 	*pBufferLength = sizeof(DataItem) * iCount;
 	return (unsigned char *)pItemsBuffer;
+}
+
+DataWriter::DataWriter(void)
+: Data()
+{
+	
+}
+
+DataWriter::DataWriter(Object * data)
+: Data()
+{
+	bool ok = init(data);
+	SCAssert(ok, "init data error");
+	(void)ok;
 }
 
 bool DataWriter::init(Object * data)
@@ -267,7 +261,7 @@ bool DataWriter::init(Object * data)
 	
 	// items buffer
 	unsigned long iItemsBufferLength = 0;
-	unsigned char * pItemsBuffer = SCDataWriter_createItemsBuffer(data, &iItemsBufferLength, pStringsArray);
+	unsigned char * pItemsBuffer = createItemsBuffer(data, &iItemsBufferLength, pStringsArray);
 	if (!pItemsBuffer || iItemsBufferLength == 0)
 	{
 		SCError("error");
@@ -278,7 +272,7 @@ bool DataWriter::init(Object * data)
 	
 	// string array buffer
 	unsigned long iStringsBufferLength = 0;
-	unsigned char * pStringsBuffer = SCDataWriter_createBufferWithStringArray(pStringsArray, &iStringsBufferLength);
+	unsigned char * pStringsBuffer = createBufferWithStringArray(pStringsArray, &iStringsBufferLength);
 	if (!pStringsBuffer || iStringsBufferLength == 0)
 	{
 		SCError("error");
@@ -294,7 +288,7 @@ bool DataWriter::init(Object * data)
 	unsigned long iBufferLength = sizeof(DataHead) + iItemsBufferLength + iStringsBufferLength;
 	SCLog("iBufferLength = %ld", iBufferLength);
 	
-	if (!Data::init(iBufferLength))
+	if (!super::init(iBufferLength))
 	{
 		if (pStringsBuffer) free(pStringsBuffer);
 		if (pItemsBuffer) free(pItemsBuffer);

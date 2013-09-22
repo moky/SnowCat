@@ -19,6 +19,8 @@ class FiniteState;
 
 class StateTransition : public FSM_NAMESPACE::Transition<FiniteState>, public Object
 {
+	typedef FSM_NAMESPACE::Transition<FiniteState> super;
+	
 public:
 	StateTransition(FiniteState * target);
 	StateTransition(const std::string & target);

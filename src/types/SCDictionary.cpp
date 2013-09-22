@@ -47,7 +47,10 @@ Dictionary * Dictionary::copy(void) const
 		}
 		obj = iter->second->copy();
 		SCAssert(obj, "Not enough memory");
-		dict->setObject(obj, iter->first, false); // REF = 1
+		if (obj)
+		{
+			dict->setObject(obj, iter->first, false); // REF = 1
+		}
 	}
 	return dict;
 }

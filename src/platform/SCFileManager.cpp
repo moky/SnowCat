@@ -15,7 +15,7 @@
 
 NAMESPACE_BEGIN(SC_NAMESPACE)
 
-bool SCFileManager_mkdir(const std::string & sPath)
+static bool mkdir_(const std::string & sPath)
 {
 	return mkdir(sPath.c_str(), 0755) == 0;
 }
@@ -40,7 +40,7 @@ bool SCFileManager_makeDirectory(const int type, std::string & dir)
 	
 	std::string sPackageName = Client::currentClient()->getPackageName();
 	std::string path = "/sdcard/.beva/" + sPackageName;
-	if (!SCFileManager_mkdir(path))
+	if (!mkdir_(path))
 	{
 		path = "/data/data/" + sPackageName;
 	}
@@ -60,7 +60,7 @@ bool SCFileManager_makeDirectory(const int type, std::string & dir)
 	}
 	
 	dir.assign(path);
-	return SCFileManager_mkdir(dir);
+	return mkdir_(dir);
 }
 #else
 // iOS
@@ -244,7 +244,7 @@ bool FileManager::mkdir(const URL &sDir)
 		return false;
 	}
 	
-	if (SCFileManager_mkdir(dir))
+	if (mkdir_(dir))
 	{
 		return true;
 	}
