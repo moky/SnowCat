@@ -68,7 +68,7 @@ public:
 	
 	inline bool isZero(void) const {
 		UNIT_TYPE * x = m_pData;
-		for (unsigned int i = 0; i < m_uLen; i++, x++) {
+		for (unsigned int i = 0; i < m_uLen; ++i, ++x) {
 			if (*x != 0) return false;
 		}
 		return true; // no mater what the negative value is.

@@ -39,7 +39,7 @@ Array * Array::copy(void) const
 	Array * array = new Array();
 	SCAssert(array, "Not enough memory");
 	IObject * obj;
-	for (const_iterator iter = this->begin(); iter != this->end(); iter++)
+	for (const_iterator iter = this->begin(); iter != this->end(); ++iter)
 	{
 		if (*iter == NULL)
 		{

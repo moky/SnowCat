@@ -38,7 +38,7 @@ Dictionary * Dictionary::copy(void) const
 	Dictionary * dict = new Dictionary();
 	SCAssert(dict, "Not enough memory");
 	IObject * obj;
-	for (const_iterator iter = this->begin(); iter != this->end(); iter++)
+	for (const_iterator iter = this->begin(); iter != this->end(); ++iter)
 	{
 		if (iter->second == NULL)
 		{

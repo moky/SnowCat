@@ -54,7 +54,7 @@ public:
 	}
 	
 	inline void removeObjectsForKeys(const BaseArray<K> & keys, const bool release = true) {
-		for (typename BaseArray<K>::const_iterator iter = keys.begin(); iter != keys.end(); iter++)
+		for (typename BaseArray<K>::const_iterator iter = keys.begin(); iter != keys.end(); ++iter)
 			this->removeObjectForKey(*iter, release);
 	}
 	

@@ -33,7 +33,7 @@ bool StringUtils::isNumeric(const std::string & string)
 {
 	int len = string.length();
 	int cnt = 0;
-	for (int i = len - 1; i >= 0; i--)
+	for (int i = len - 1; i >= 0; --i)
 	{
 		if (string[i] == '-')
 		{
@@ -60,7 +60,7 @@ bool StringUtils::isNumeric(const std::string & string)
 bool StringUtils::isInteger(const std::string & string)
 {
 	int len = string.length();
-	for (int i = len - 1; i >= 0; i--)
+	for (int i = len - 1; i >= 0; --i)
 	{
 		if (string[i] == '-')
 		{

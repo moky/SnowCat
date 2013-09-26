@@ -49,7 +49,7 @@ public:
 	BaseArray(const unsigned int count, E item1, ...) : BaseArray() {
 		va_list args;
 		va_start(args, item1);
-		for (unsigned int i = 0; i < count; i++) {
+		for (unsigned int i = 0; i < count; ++i) {
 			this->addObject(item1);
 			item1 = va_arg(args, E);
 		}
@@ -68,7 +68,7 @@ public:
 	
 	// return UINT_MAX if doesn't contain the object
 	inline unsigned int index(const E item) const {
-		for (const_iterator iter = this->begin(); iter != this->end(); iter++)
+		for (const_iterator iter = this->begin(); iter != this->end(); ++iter)
 			if (item == *iter) return iter - this->begin();
 		return UINT_MAX;
 	}
@@ -98,7 +98,7 @@ public:
 	}
 	
 	inline void add(const BaseArray & array, const bool retain = true) {
-		for (const_iterator iter = array.begin(); iter != array.end(); iter++)
+		for (const_iterator iter = array.begin(); iter != array.end(); ++iter)
 			this->add(*iter, retain);
 	}
 	
@@ -136,13 +136,13 @@ public:
 	}
 	
 	inline void remove(const BaseArray & array, const bool release = true) {
-		for (const_iterator iter = array.begin(); iter != array.end(); iter++)
+		for (const_iterator iter = array.begin(); iter != array.end(); ++iter)
 			this->remove(*iter, release);
 	}
 	
 	inline void removeAll(const bool release = true) {
 		if (release)
-			for (const_iterator iter = this->begin(); iter != this->end(); iter++)
+			for (const_iterator iter = this->begin(); iter != this->end(); ++iter)
 				this->releaseItem(*iter);
 		this->clear();
 	}

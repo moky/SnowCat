@@ -67,7 +67,7 @@ bool Integer::resize(unsigned int size)
 		{
 			mid = size / 2;
 			
-			for (int i = mid; i < size; i++)
+			for (int i = mid; i < size; ++i)
 			{
 				if (m_pData[i] != 0)
 				{
@@ -149,7 +149,7 @@ String * Integer::stringValue(const char * separator) const
 	
 	UNIT_TYPE * p = m_pData + m_uLen - 1;
 	char sz[9];
-	for (int i = 0; i < m_uLen; i++, p--)
+	for (int i = 0; i < m_uLen; ++i, --p)
 	{
 		memset(sz, 0, 9);
 		snprintf(sz, 9, "%08lX", *p);
@@ -206,7 +206,7 @@ int Integer::compare(const Integer & a, const Integer & b)
 	{
 		// case 1
 		x = b.m_pData + a.m_uLen;
-		for (i = a.m_uLen; i < b.m_uLen; i++, x++)
+		for (i = a.m_uLen; i < b.m_uLen; ++i, ++x)
 		{
 			if (*x != 0)
 			{
@@ -219,7 +219,7 @@ int Integer::compare(const Integer & a, const Integer & b)
 	{
 		// case 2
 		x = a.m_pData + b.m_uLen;
-		for (i = b.m_uLen; i < a.m_uLen; i++, x++)
+		for (i = b.m_uLen; i < a.m_uLen; ++i, ++x)
 		{
 			if (*x != 0)
 			{
@@ -232,7 +232,7 @@ int Integer::compare(const Integer & a, const Integer & b)
 	UNIT_TYPE * y;
 	x = a.m_pData + (end - 1);
 	y = b.m_pData + (end - 1);
-	for (i = 0; i < end; i++, x--, y--)
+	for (i = 0; i < end; ++i, --x, --y)
 	{
 		if (*x < *y)
 		{
@@ -302,7 +302,7 @@ Integer & Integer::operator += (const Integer & other)
 	int overflow = 0;
 	
 	// part 1
-	for (; i < other.m_uLen; i++, x++, y++)
+	for (; i < other.m_uLen; ++i, ++x, ++y)
 	{
 		sum = *x;
 		sum += overflow;
@@ -334,7 +334,7 @@ Integer & Integer::operator += (const Integer & other)
 	
 	// part 2
 	if (overflow != 0)
-	for (; i < this->m_uLen; i++, x++)
+	for (; i < this->m_uLen; ++i, ++x)
 	{
 		sum = *x;
 		sum += overflow;
@@ -409,11 +409,11 @@ Integer & Integer::operator *= (const Integer & other)
 	unsigned long overflow = 0;
 	
 	// part 1
-	for (int i = 0; i < this->m_uLen; i++, x++)
+	for (int i = 0; i < this->m_uLen; ++i, ++x)
 	{
 		y = other.m_pData;
 		z = product.m_pData + i;
-		for (int j = 0; j < other.m_uLen; j++, y++, z++)
+		for (int j = 0; j < other.m_uLen; ++j, ++y, ++z)
 		{
 			pro = *x;
 			pro *= *y;

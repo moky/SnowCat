@@ -83,13 +83,13 @@ public:
 #pragma mark Case
 	
 	static inline std::string & lowercaseString(std::string & string) {
-		for (int i = string.length() - 1; i >= 0; i--)
+		for (int i = string.length() - 1; i >= 0; --i)
 			string[i] = tolower(string[i]);
 		return string;
 	}
 	
 	static inline std::string & uppercaseString(std::string & string) {
-		for (int i = string.length() - 1; i >= 0; i--)
+		for (int i = string.length() - 1; i >= 0; --i)
 			string[i] = toupper(string[i]);
 		return string;
 	}

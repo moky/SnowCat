@@ -37,7 +37,7 @@ static unsigned char * createBufferWithStringArray(Array * pArray, unsigned long
 	*pCount = pArray->count();
 	
 	unsigned short * pLen;
-	for (int i = 0; i < *pCount; i++)
+	for (int i = 0; i < *pCount; ++i)
 	{
 		String * pString = (String *)pArray->objectAtIndex(i);
 		SCAssert(pString->length() < 65536, "too long string");
@@ -62,7 +62,7 @@ static int indexForString(String * pString, Array * pArray)
 	}
 	unsigned int iCount = pArray->count();
 	unsigned int index = 0;
-	for (; index < iCount; index++)
+	for (; index < iCount; ++index)
 	{
 		String * pValue = (String *)pArray->objectAtIndex(index);
 		if (strcmp(pString->c_str(), pValue->c_str()) == 0)
@@ -115,7 +115,7 @@ static int processArray(DataItem * pItemBuffer, unsigned int iPlaceLeft, const A
 	int iCount = 0;
 	pItemBuffer->type = DataItemTypeArray;
 	pItemBuffer->count = pArray->count();
-	iCount++;
+	++iCount;
 	
 	DataItem * pChild = pItemBuffer + 1; // first child, starts from next space
 	IObject * pObject = NULL;
@@ -138,7 +138,7 @@ static int processDictionary(DataItem * pItemBuffer, unsigned int iPlaceLeft, co
 	int iCount = 0;
 	pItemBuffer->type = DataItemTypeDictionary;
 	pItemBuffer->count = pDict->count();
-	iCount++;
+	++iCount;
 	
 	DataItem * pChild = pItemBuffer + 1; // first child, starts from next space
 	std::string key;
@@ -204,7 +204,7 @@ static int processData(DataItem * pItemBuffer, unsigned int iPlaceLeft, IObject 
 	{
 		SCError("Warning: Unknown Object.");
 		pItemBuffer->type = DataItemTypeUnknown;
-		iCount++;
+		++iCount;
 	}
 	return iCount;
 }

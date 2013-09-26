@@ -46,7 +46,7 @@ public:
 	BaseDictionary(const unsigned int count, const K & key1, V value1, ...) : BaseDictionary() {
 		va_list args;
 		va_start(args, value1);
-		for (unsigned int i = 0; i < count; i++) {
+		for (unsigned int i = 0; i < count; ++i) {
 			this->setObject(value1, key1);
 			key1 = va_arg(args, K);
 			value1 = va_arg(args, V);
@@ -78,7 +78,7 @@ public:
 	}
 	
 	inline void set(const BaseDictionary & other, const bool retain = true) {
-		for (const_iterator iter = other.begin(); iter != other.end(); iter++)
+		for (const_iterator iter = other.begin(); iter != other.end(); ++iter)
 			this->set(iter->first, iter->second, retain);
 	}
 	
@@ -94,7 +94,7 @@ public:
 	
 	inline void removeAll(const bool release = true) {
 		if (release && this->size() > 0)
-			for (const_iterator iter = this->begin(); iter != this->end(); iter++)
+			for (const_iterator iter = this->begin(); iter != this->end(); ++iter)
 				this->releaseValue(iter->second);
 		this->clear();
 	}

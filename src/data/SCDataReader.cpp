@@ -34,7 +34,7 @@ static Array * getStringArrayFromBuffer(const unsigned char * pBuffer, const uns
 	char * str = new char[65536];
 	
 	unsigned short * pLen;
-	for (int i = 0; i < *pCount; i++)
+	for (int i = 0; i < *pCount; ++i)
 	{
 		pLen = (unsigned short *)p; // 0 - 65535
 		p += sizeof(unsigned short);
@@ -156,7 +156,7 @@ void DataReader::reset(void)
 DataItem * DataReader::read(void)
 {
 	DataItem * pItem = getItem(m_iItemIndex);
-	m_iItemIndex++;
+	++m_iItemIndex;
 	return pItem;
 }
 
@@ -223,7 +223,7 @@ Array * DataReader::parseArrayItem(const DataItem * pItem)
 	Array * pArray = Array::array();
 	//pArray->initWithCapacity(pItem->count);
 	
-	for (int i = 0; i < pItem->count; i++)
+	for (int i = 0; i < pItem->count; ++i)
 	{
 		DataItem * pChild = read();
 		Object * pObj = parseItem(pChild);
@@ -238,7 +238,7 @@ Dictionary * DataReader::parseDictionaryItem(const DataItem * pItem)
 {
 	Dictionary * pDict = new Dictionary();
 	
-	for (int i = 0; i < pItem->count; i++)
+	for (int i = 0; i < pItem->count; ++i)
 	{
 		DataItem * pChild = read();
 		String * pKey = pChild ? getString(pChild->key) : NULL;

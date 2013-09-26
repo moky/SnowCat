@@ -208,7 +208,7 @@ bool Client::isWiFiActived(void) const
 	
 	std::string ss[] = {"en0", "en1", "wlan0", "wlan1", "eth0", "eth1"};
 	int res;
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 6; ++i)
 	{
 		res = checkSocket(fd, ss[i].c_str());
 		if (res != -1)
