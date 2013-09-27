@@ -22,35 +22,37 @@ public:
 	
 	static NotificationCenter * defaultCenter(void);
 	
-	void addObserver(IObject * target, NotificationHandler selector, const std::string & name = "*");
-	
-	inline void removeObserver(IObject * target, const std::string & name = "*") {
-		locateObserver(target, name, -1);
-	}
-	
-	inline bool containsObserver(const IObject * target, const std::string & name = "*") {
-		return locateObserver(target, name) != NULL;
-	}
-	
-	void postNotification(const Notification & notice) const;
-	
-	inline void postNotification(const std::string & name, IObject * sender = NULL) const {
-		postNotification(Notification(name, sender));
-	}
-	
 	/**
 	 *  remove empty list
 	 */
 	void purgeCenter(void);
 	
-protected:
-	/**
-	 *  method:
-	 *      0, return p
-	 *      1, remove + return p
-	 *      -1, remove, return NULL
-	 */
-	NotificationObserver * locateObserver(const IObject * target, const std::string & name = "*", const int method = 0);
+	// post notification
+	void postNotification(const Notification & notice) const;
+	inline void postNotification(const std::string & name, IObject * sender = NULL) const {
+		postNotification(Notification(name, sender));
+	}
+	
+#pragma mark -
+	
+	void addObserver(NotificationObserver * observer, const std::string & key = "*");
+	void removeObserver(NotificationObserver * observer, const std::string & key = "*");
+	bool containsObserver(NotificationObserver * observer, const std::string & key = "*") const;
+	
+#pragma mark function handler
+	void addObserver(NotificationObserver::FunctionHandler function, const std::string & key = "*");
+	void removeObserver(NotificationObserver::FunctionHandler function, const std::string & key = "*");
+	bool containsObserver(NotificationObserver::FunctionHandler function, const std::string & key = "*") const;
+	
+#pragma mark object handler
+	void addObserver(IObject * target, NotificationObserver::ObjectHandler selector, const std::string & key = "*");
+	void removeObserver(IObject * target, NotificationObserver::ObjectHandler selector = NULL, const std::string & key = "*");
+	bool containsObserver(IObject * target, NotificationObserver::ObjectHandler selector = NULL, const std::string & key = "*") const;
+	
+#pragma mark delegate handler
+	void addObserver(NotificationDelegate * delegate, const std::string & key = "*");
+	void removeObserver(NotificationDelegate * delegate, const std::string & key = "*");
+	bool containsObserver(NotificationDelegate * delegate, const std::string & key = "*") const;
 	
 private:
 	Dictionary * m_pObserverLists;

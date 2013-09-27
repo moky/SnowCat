@@ -34,18 +34,24 @@ NotificationCenter * NotificationCenter::defaultCenter(void)
 	return s_pDefaultNotificationCenter;
 }
 
-void NotificationCenter::addObserver(IObject * target, NotificationHandler selector, const std::string & name)
+void NotificationCenter::purgeCenter(void)
 {
-	SCAssert(target && selector, "parameters invalid");
-	Array * pList = (Array *)m_pObserverLists->objectForKey(name);
-	if (!pList)
+	BaseArray<std::string> emptyLists = BaseArray<std::string>();
+	
+	std::string key;
+	IObject * obj;
+	SC_DICTIONARY_FOREACH_REVERSE(m_pObserverLists, key, obj)
 	{
-		pList = new Array();
-		m_pObserverLists->setObject(pList, name, false); // REF = 1
+		if (((Array *)obj)->empty())
+		{
+			emptyLists.add(key);
+		}
 	}
 	
-	NotificationObserver * pObserver = new NotificationObserver(target, selector);
-	pList->addObject(pObserver, false); // REF = 1
+	if (!emptyLists.empty())
+	{
+		m_pObserverLists->removeObjectsForKeys(emptyLists);
+	}
 }
 
 void NotificationCenter::postNotification(const Notification & notice) const
@@ -71,63 +77,176 @@ void NotificationCenter::postNotification(const Notification & notice) const
 	}
 }
 
-void NotificationCenter::purgeCenter(void)
+#pragma mark -
+
+static inline bool isEqual(NotificationObserver * observer, IObject * obj)
 {
-	BaseArray<std::string> emptyLists = BaseArray<std::string>();
-	
-	std::string key;
-	IObject * obj;
-	SC_DICTIONARY_FOREACH_REVERSE(m_pObserverLists, key, obj)
-	{
-		if (((Array *)obj)->empty())
-		{
-			emptyLists.add(key);
-		}
-	}
-	
-	if (!emptyLists.empty())
-	{
-		m_pObserverLists->removeObjectsForKeys(emptyLists);
-	}
+	return *observer == *(NotificationObserver *)obj;
 }
 
-NotificationObserver * NotificationCenter::locateObserver(const IObject * target, const std::string & name, const int method)
+void NotificationCenter::addObserver(NotificationObserver * observer, const std::string & key)
 {
-	std::string key;
-	IObject * obj;
-	Array * pList;
-	NotificationObserver * nob;
-	SC_DICTIONARY_FOREACH_REVERSE(m_pObserverLists, key, obj)
+	if (!observer || containsObserver(observer, key))
 	{
-		if (name != "*" && name != key)
+		return;
+	}
+	
+	Array * pList = (Array *)m_pObserverLists->objectForKey(key);
+	if (!pList)
+	{
+		pList = new Array();
+		m_pObserverLists->setObject(pList, key, false); // REF = 1
+	}
+	pList->addObject(observer);
+}
+
+void NotificationCenter::removeObserver(NotificationObserver * observer, const std::string & key)
+{
+	if (!observer)
+	{
+		return;
+	}
+	
+	std::string k;
+	IObject * obj;
+	
+	Array * list;
+	
+	SC_DICTIONARY_FOREACH_REVERSE(m_pObserverLists, k, obj)
+	{
+		if (key != "*" && key != k)
 		{
 			continue;
 		}
-		pList = (Array *)obj;
-		SC_ARRAY_FOREACH_REVERSE(pList, obj)
+		list = (Array *)obj;
+		SC_ARRAY_FOREACH_REVERSE(list, obj)
 		{
-			nob = (NotificationObserver *)obj;
-			if (nob->getTarget() == target)
+			if (isEqual(observer, obj))
 			{
-				if (method == 0)
-				{
-					return nob;
-				}
-				else if (method == 1)
-				{
-					nob->retain();
-					nob->autorelease();
-					pList->removeObject(nob);
-					return nob;
-				}
-				else if (method == -1)
-				{
-					pList->removeObject(nob);
-				}
+				list->removeObject(obj);
 			}
 		}
 	}
-	return NULL;
+}
+
+bool NotificationCenter::containsObserver(NotificationObserver * observer, const std::string & key) const
+{
+	if (!observer)
+	{
+		return false;
+	}
+	
+	std::string k;
+	IObject * obj;
+	
+	Array * list;
+	
+	SC_DICTIONARY_FOREACH_REVERSE(m_pObserverLists, k, obj)
+	{
+		if (key != "*" && key != k)
+		{
+			continue;
+		}
+		list = (Array *)obj;
+		SC_ARRAY_FOREACH_REVERSE(list, obj)
+		{
+			if (isEqual(observer, obj))
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+#pragma mark function handler
+
+void NotificationCenter::addObserver(NotificationObserver::FunctionHandler function, const std::string & key)
+{
+	if (!function || containsObserver(function, key))
+	{
+		return;
+	}
+	NotificationObserver * observer = new NotificationFunctionObserver(function);
+	addObserver(observer, key);
+	observer->release();
+}
+void NotificationCenter::removeObserver(NotificationObserver::FunctionHandler function, const std::string & key)
+{
+	if (!function)
+	{
+		return;
+	}
+	NotificationObserver * observer = new NotificationFunctionObserver(function);
+	removeObserver(observer, key);
+	observer->release();
+}
+bool NotificationCenter::containsObserver(NotificationObserver::FunctionHandler function, const std::string & key) const
+{
+	NotificationObserver * observer = new NotificationFunctionObserver(function);
+	bool has = containsObserver(observer, key);
+	observer->release();
+	return has;
+}
+
+#pragma mark object handler
+
+void NotificationCenter::addObserver(IObject * target, NotificationObserver::ObjectHandler selector, const std::string & key)
+{
+	if (!target || containsObserver(target, selector, key))
+	{
+		return;
+	}
+	NotificationObserver * observer = new NotificationObjectObserver(target, selector);
+	addObserver(observer, key);
+	observer->release();
+}
+void NotificationCenter::removeObserver(IObject * target, NotificationObserver::ObjectHandler selector, const std::string & key)
+{
+	if (!target)
+	{
+		return;
+	}
+	NotificationObserver * observer = new NotificationObjectObserver(target, selector);
+	removeObserver(observer, key);
+	observer->release();
+}
+bool NotificationCenter::containsObserver(IObject * target, NotificationObserver::ObjectHandler selector, const std::string & key) const
+{
+	NotificationObserver * observer = new NotificationObjectObserver(target, selector);
+	bool has = containsObserver(observer, key);
+	observer->release();
+	return has;
+}
+
+#pragma mark delegate handler
+
+void NotificationCenter::addObserver(NotificationDelegate * delegate, const std::string & key)
+{
+	if (!delegate || containsObserver(delegate, key))
+	{
+		return;
+	}
+	NotificationObserver * observer = new NotificationDelegateObserver(delegate);
+	addObserver(observer, key);
+	observer->release();
+}
+void NotificationCenter::removeObserver(NotificationDelegate * delegate, const std::string & key)
+{
+	if (!delegate)
+	{
+		return;
+	}
+	NotificationObserver * observer = new NotificationDelegateObserver(delegate);
+	removeObserver(observer, key);
+	observer->release();
+}
+bool NotificationCenter::containsObserver(NotificationDelegate * delegate, const std::string & key) const
+{
+	NotificationObserver * observer = new NotificationDelegateObserver(delegate);
+	bool has = containsObserver(observer, key);
+	observer->release();
+	return has;
 }
 
 NAMESPACE_END

@@ -20,7 +20,7 @@ class Notification : public Object
 public:
 	Notification(void) : Object(), m_sName(""), m_pSender(NULL), m_pUserInfo(NULL) {
 	}
-	Notification(const std::string & name, IObject * sender = NULL) : Object(), m_pUserInfo(NULL) {
+	Notification(const std::string & name, IObject * sender = NULL) : Object(), m_sName(""), m_pSender(NULL), m_pUserInfo(NULL) {
 		setName(name);
 		setSender(sender);
 	}
@@ -40,7 +40,7 @@ public:
 	// sender
 	inline void setSender(IObject * sender) {
 		if (sender != m_pSender) {
-			sender->retain();
+			if (sender) sender->retain();
 			if (m_pSender) m_pSender->release();
 			m_pSender = sender;
 		}
@@ -72,6 +72,11 @@ private:
 	std::string m_sName;
 	IObject * m_pSender;
 	Dictionary * m_pUserInfo;
+};
+
+class NotificationDelegate {
+public:
+	virtual void onNotification(const Notification & notice) = 0;
 };
 
 NAMESPACE_END
