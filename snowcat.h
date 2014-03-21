@@ -52,6 +52,15 @@
 #include "SCFile.h"
 #include "SCFileManager.h"
 #include "SCClient.h"
+// app
+#include "SCAppProtocol.h"
+#include "SCAppView.h"
+#include "SCAppImageView.h"
+
+// third_party
+#include "MD5.h"
+#include "IPAddress.h"
+#include "JniHelper.h"
 
 NAMESPACE_BEGIN(SC_NAMESPACE)
 

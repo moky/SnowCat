@@ -13,8 +13,6 @@
 
 NAMESPACE_BEGIN(SC_NAMESPACE)
 
-#define FloatEqual(a, b) ((a) - (b) < 0.000001 && (a) - (b) > -0.000001)
-
 class Size;
 
 class Point
@@ -39,6 +37,9 @@ public:
 	// equal
 	inline bool operator == (const Point & other) const {
 		return FloatEqual(x, other.x) && FloatEqual(y, other.y);
+	}
+	inline bool operator != (const Point & other) const {
+		return !(*this == other);
 	}
 	
 	// add
@@ -95,6 +96,9 @@ public:
 	inline bool operator == (const Size & other) const {
 		return FloatEqual(width, other.width) && FloatEqual(height, other.height);
 	}
+	inline bool operator != (const Size & other) const {
+		return !(*this == other);
+	}
 	
 	// multiply
 	inline Size & operator * (const float scale) const {
@@ -127,6 +131,9 @@ public:
 	
 	inline bool operator == (const Rect & other) const {
 		return origin == other.origin && size == other.size;
+	}
+	inline bool operator != (const Rect & other) const {
+		return !(*this == other);
 	}
 	
 	// center

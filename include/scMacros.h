@@ -9,6 +9,8 @@
 #ifndef SnowCat_scMacros_h
 #define SnowCat_scMacros_h
 
+#include <math.h>
+
 #if !defined (ANDROID) && defined (__android_log_print)
 	#define ANDROID
 #endif
@@ -44,6 +46,7 @@
 
 
 
+#pragma mark -
 
 
 
@@ -82,5 +85,34 @@
 // namespace snowcat {}
 #define SC_NAMESPACE                  snowcat
 #define USING_NS_SC                   USING_NAMESPACE(SC_NAMESPACE)
+
+
+#pragma mark -
+
+// math
+#if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#	define DIV(A, B)    ({ __typeof__(A) __a = (A); __typeof__(B) __b = (B); __b == 0 ? INFINITY : __a / __b; })
+#else
+#	define DIV(A, B)    ((B) == 0 ? INFINITY : (A) / (B))
+#endif
+
+#define FloatLess(A, B)         ((A) - (B) < -0.000001)
+#define FloatGreater(A, B)      ((A) - (B) > 0.000001)
+
+#define FloatLessEqual(A, B)    ((A) - (B) < 0.000001)
+#define FloatGreaterEqual(A, B) ((A) - (B) > -0.000001)
+
+#define FloatEqual(A, B)        (FloatLessEqual(A, B) && FloatGreaterEqual(A, B))
+#define FloatNotEqual(A, B)     (FloatLess(A, B) || FloatGreater(A, B))
+
+
+#ifndef MAX
+#define MAX(A, B)       ((A) > (B) ? (A) : (B))
+#endif
+
+#ifndef MIN
+#define MIN(A, B)       ((A) < (B) ? (A) : (B))
+#endif
+
 
 #endif

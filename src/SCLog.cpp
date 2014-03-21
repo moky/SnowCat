@@ -15,6 +15,10 @@
 
 #include "SCLog.h"
 
+#if SC_PLATFORM_IS(SC_PLATFORM_ANDROID)
+#include <android/log.h>
+#endif
+
 NAMESPACE_BEGIN(SC_NAMESPACE)
 
 static inline void printf_(const char *format, va_list args)
@@ -24,7 +28,8 @@ static inline void printf_(const char *format, va_list args)
 	
 	vsprintf(buf, format, args);
 	
-#ifdef __android_log_print
+//#ifdef __android_log_print
+#if SC_PLATFORM_IS(SC_PLATFORM_ANDROID)
 	__android_log_print(ANDROID_LOG_DEBUG, "snowcat debug info",  buf);
 #else
 	printf("SnowCat: %s\n", buf);

@@ -66,8 +66,8 @@ NotificationObjectObserver::~NotificationObjectObserver(void)
 	if (m_pTarget)
 	{
 		m_pTarget->release();
+		m_pTarget = NULL;
 	}
-	m_pTarget = NULL;
 	m_pfnSelector = NULL;
 }
 
