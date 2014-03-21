@@ -408,7 +408,6 @@ Integer & Integer::operator *= (const Integer & other)
 	
 	unsigned long overflow = 0;
 	
-	// part 1
 	for (int i = 0; i < this->m_uLen; ++i, ++x)
 	{
 		y = other.m_pData;
@@ -431,10 +430,14 @@ Integer & Integer::operator *= (const Integer & other)
 				*z = pro - overflow * UNIT_MAX;
 			}
 		}
+		if (overflow != 0) {
+			if (i >= this->m_uLen - 1) {
+				SCWarning("out of memory");
+				product.expand();
+			}
+			*z = overflow;
+		}
 	}
-	
-	// part 2
-	*z = overflow;
 	
 	product.resize();
 	*this = product;
